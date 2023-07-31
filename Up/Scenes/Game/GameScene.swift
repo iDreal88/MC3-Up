@@ -220,10 +220,13 @@ extension GameScene: SKPhysicsContactDelegate {
     
     override func didSimulatePhysics() {
         player.position.x += xAcceleration * 50
-        if player.position.x < -40 {
-            player.position = CGPoint(x: CGFloat(frame.size.width), y: player.position.y)
-        } else if player.position.x > frame.size.width  + 40 {
-            player.position = CGPoint(x: -CGFloat(40), y: player.position.y)
+        if player.position.x <= 20{
+            
+//            player.position = CGPoint(x: -CGFloat(10), y: player.position.y)
+            player.position.x = 20
+        } else if player.position.x >= frame.size.width - 20{
+//            player.position = CGPoint(x: CGFloat(frame.size.width), y: player.position.y)
+            player.position.x = frame.size.width - 20
         }
     }
 }
