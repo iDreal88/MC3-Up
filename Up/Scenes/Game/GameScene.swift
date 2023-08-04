@@ -25,8 +25,8 @@ class GameScene: SKScene {
     
     let torpedoSoundAction: SKAction = SKAction.playSoundFileNamed("torpedo.mp3", waitForCompletion: false)
     var gameTimer: Timer!
-    var attackers = ["red_1","yellow_1","green_1","blue_1","purple_1","pink_1","orange_1"]
-    
+    var attackers1 = ["red_1","yellow_1","green_1","blue_1","purple_1","pink_1","orange_1"]
+    var attackers2 = ["red_1","yellow_1","green_1","blue_1","purple_1","pink_1","orange_1"]
     let balloonCategory: UInt32 = 0x1 << 1
     let torpedoCategory: UInt32 = 0x1 << 0
     
@@ -110,36 +110,58 @@ class GameScene: SKScene {
     
     @objc func addBalloons() {
         //Shuffled array of attackers
-        attackers = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: attackers) as! [String]
-        let attaker = SKSpriteNode(imageNamed: attackers[0])
-        let attakerPosition = GKRandomDistribution(lowestValue: 0, highestValue: Int(frame.size.width))
-        let position = CGFloat(attakerPosition.nextInt())
-        attaker.size = CGSize(width: 60, height: 60)
-        attaker.position = CGPoint(x: position, y: frame.size.height + attaker.size.height)
-        attaker.physicsBody = SKPhysicsBody(circleOfRadius: attaker.size.width/2)
+        attackers1 = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: attackers1) as! [String]
+        let attaker1 = SKSpriteNode(imageNamed: attackers1[0])
+        let attakerPosition1 = GKRandomDistribution(lowestValue: 0, highestValue: Int(frame.size.width)/2)
+        let position1 = CGFloat(attakerPosition1.nextInt())
+        attaker1.size = CGSize(width: 60, height: 60)
+        attaker1.position = CGPoint(x: position1, y: frame.size.height + attaker1.size.height)
+        attaker1.physicsBody = SKPhysicsBody(circleOfRadius: attaker1.size.width/2)
         
-        attaker.physicsBody?.categoryBitMask = balloonCategory
-        attaker.physicsBody?.contactTestBitMask = torpedoCategory
-        attaker.physicsBody?.collisionBitMask = 0
+        attaker1.physicsBody?.categoryBitMask = balloonCategory
+        attaker1.physicsBody?.contactTestBitMask = torpedoCategory
+        attaker1.physicsBody?.collisionBitMask = 0
         
-        addChild(attaker)
+        addChild(attaker1)
+    
+        
+        attackers2 = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: attackers2) as! [String]
+        let attaker2 = SKSpriteNode(imageNamed: attackers2[0])
+        let attakerPosition2 = GKRandomDistribution(lowestValue: Int(frame.size.width)/2, highestValue: Int(frame.size.width))
+        let position2 = CGFloat(attakerPosition2.nextInt())
+        attaker2.size = CGSize(width: 60, height: 60)
+        attaker2.position = CGPoint(x: position2, y: frame.size.height + attaker2.size.height)
+        attaker2.physicsBody = SKPhysicsBody(circleOfRadius: attaker2.size.width/2)
+        
+        attaker2.physicsBody?.categoryBitMask = balloonCategory
+        attaker2.physicsBody?.contactTestBitMask = torpedoCategory
+        attaker2.physicsBody?.collisionBitMask = 0
+        
+        addChild(attaker2)
         
         let animationDuration = difficultManager.getBalloonAnimationDurationInterval()
         
-        var actionArray = [SKAction]()
-        actionArray.append(SKAction.move(to: CGPoint(x: position, y: -attaker.size.height), duration: animationDuration))
-        actionArray.append(SKAction.run(balloonGotBase))
-        actionArray.append(SKAction.removeFromParent())
+        var actionArray1 = [SKAction]()
+        actionArray1.append(SKAction.move(to: CGPoint(x: position1, y: -attaker1.size.height), duration: animationDuration))
+       
+        actionArray1.append(SKAction.run(balloonGotBase))
+        actionArray1.append(SKAction.removeFromParent())
         
-        attaker.run(SKAction.sequence(actionArray))
+        var actionArray2 = [SKAction]()
+        actionArray2.append(SKAction.move(to: CGPoint(x: position2, y: -attaker2.size.height), duration: animationDuration))
+        actionArray2.append(SKAction.run(balloonGotBase))
+        actionArray2.append(SKAction.removeFromParent())
+        
+        attaker1.run(SKAction.sequence(actionArray1))
+        attaker2.run(SKAction.sequence(actionArray2))
     }
     
     func balloonGotBase() {
         run(SKAction.playSoundFileNamed("looseLife.mp3", waitForCompletion: false))
         if livesArray.count > 0 {
             let lifeNode = livesArray.first
-            lifeNode?.removeFromParent()
-            livesArray.removeFirst()
+//            lifeNode?.removeFromParent()
+//            livesArray.removeFirst()
         }
         if livesArray.count == 0 {
             let transition = SKTransition.flipHorizontal(withDuration: 0.5)
