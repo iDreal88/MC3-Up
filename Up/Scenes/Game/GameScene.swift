@@ -47,6 +47,15 @@ class GameScene: SKScene {
         setupCoreMotion()
     }
     
+    func updateScore(playerNode: SKSpriteNode, balloonNode: SKSpriteNode) {
+         let playerMaxY = playerNode.position.y + playerNode.size.height / 2
+         let balloonMinY = balloonNode.position.y - balloonNode.size.height / 2
+         
+         if playerMaxY > balloonMinY {
+             score += 1 // Update the score when spaceship passes through a balloon
+         }
+     }
+    
     func setupLives() {
         livesArray = [SKSpriteNode]()
         for life in 1...3 {
@@ -123,7 +132,6 @@ class GameScene: SKScene {
         attaker1.physicsBody?.collisionBitMask = 0
         
         addChild(attaker1)
-    
         
         attackers2 = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: attackers2) as! [String]
         let attaker2 = SKSpriteNode(imageNamed: attackers2[0])
@@ -149,6 +157,7 @@ class GameScene: SKScene {
         
         var actionArray2 = [SKAction]()
         actionArray2.append(SKAction.move(to: CGPoint(x: position2, y: -attaker2.size.height), duration: animationDuration))
+        
         actionArray2.append(SKAction.run(balloonGotBase))
         actionArray2.append(SKAction.removeFromParent())
         
@@ -175,32 +184,32 @@ class GameScene: SKScene {
         // Called before each frame is rendered
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        fireTorpedo()
-    }
+//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        fireTorpedo()
+//    }
     
-    func fireTorpedo() {
-        let torpedoNode = SKSpriteNode(imageNamed: "torpedo")
-        torpedoNode.position = player.position
-        torpedoNode.position.y += 5
-        torpedoNode.size = CGSize(width: 30, height: 30)
-        torpedoNode.physicsBody = SKPhysicsBody(circleOfRadius: torpedoNode.size.width/2)
-        
-        torpedoNode.physicsBody?.categoryBitMask = torpedoCategory
-        torpedoNode.physicsBody?.contactTestBitMask = balloonCategory
-        torpedoNode.physicsBody?.collisionBitMask = 0
-        torpedoNode.physicsBody?.usesPreciseCollisionDetection = true
-        
-        addChild(torpedoNode)
-        
-        let animationDuration = 1.0
-        
-        var actionArray = [SKAction]()
-        actionArray.append(torpedoSoundAction)
-        actionArray.append(SKAction.move(to: CGPoint(x: player.position.x, y: frame.size.height + torpedoNode.size.height), duration: animationDuration))
-        actionArray.append(SKAction.removeFromParent())
-        torpedoNode.run(SKAction.sequence(actionArray))
-    }
+//    func fireTorpedo() {
+//        let torpedoNode = SKSpriteNode(imageNamed: "torpedo")
+//        torpedoNode.position = player.position
+//        torpedoNode.position.y += 5
+//        torpedoNode.size = CGSize(width: 30, height: 30)
+//        torpedoNode.physicsBody = SKPhysicsBody(circleOfRadius: torpedoNode.size.width/2)
+//
+//        torpedoNode.physicsBody?.categoryBitMask = torpedoCategory
+//        torpedoNode.physicsBody?.contactTestBitMask = balloonCategory
+//        torpedoNode.physicsBody?.collisionBitMask = 0
+//        torpedoNode.physicsBody?.usesPreciseCollisionDetection = true
+//
+//        addChild(torpedoNode)
+//
+//        let animationDuration = 1.0
+//
+//        var actionArray = [SKAction]()
+//        actionArray.append(torpedoSoundAction)
+//        actionArray.append(SKAction.move(to: CGPoint(x: player.position.x, y: frame.size.height + torpedoNode.size.height), duration: animationDuration))
+//        actionArray.append(SKAction.removeFromParent())
+//        torpedoNode.run(SKAction.sequence(actionArray))
+//    }
 }
 
 extension GameScene: SKPhysicsContactDelegate {
@@ -219,7 +228,9 @@ extension GameScene: SKPhysicsContactDelegate {
         let isBalloonBody = (bodyWithMinCategoryBitMask.categoryBitMask & balloonCategory) != 0
         
         if  isTorpedoBody && isBalloonBody {
-            torpedoDidCollideWithBalloon(torpedoNode: bodyWithMaxCategoryBitMask.node as! SKSpriteNode, balloonNode: bodyWithMinCategoryBitMask.node as! SKSpriteNode)
+            guard let torpedoNode = bodyWithMaxCategoryBitMask.node else {return}
+            guard let balonNode = bodyWithMinCategoryBitMask.node else {return}
+            torpedoDidCollideWithBalloon(torpedoNode: torpedoNode as! SKSpriteNode, balloonNode: balonNode as! SKSpriteNode)
         }
         
     }
@@ -242,13 +253,21 @@ extension GameScene: SKPhysicsContactDelegate {
     
     override func didSimulatePhysics() {
         player.position.x += xAcceleration * 50
-        if player.position.x <= 20{
-            
-//            player.position = CGPoint(x: -CGFloat(10), y: player.position.y)
+        if player.position.x <= 20 {
             player.position.x = 20
-        } else if player.position.x >= frame.size.width - 20{
-//            player.position = CGPoint(x: CGFloat(frame.size.width), y: player.position.y)
+        } else if player.position.x >= frame.size.width - 20 {
             player.position.x = frame.size.width - 20
         }
+        
+        // Loop through all children (balloon nodes) in the scene
+        for node in children {
+            if let balloonNode = node as? SKSpriteNode {
+                if balloonNode.physicsBody?.categoryBitMask == balloonCategory {
+                    // Check if the spaceship passed through the balloon
+                    updateScore(playerNode: player, balloonNode: balloonNode)
+                }
+            }
+        }
     }
+
 }
