@@ -17,7 +17,7 @@ class DifficultyManager {
         }
     }
     
-    func getBalloonAparitionInterval() -> TimeInterval {
+    func getSpikeAparitionInterval() -> TimeInterval {
         switch difficulty {
         case .Easy:
             return 0.75
@@ -28,7 +28,7 @@ class DifficultyManager {
         }
     }
     
-    func getBalloonAnimationDurationInterval() -> TimeInterval {
+    func getSpikeAnimationDurationInterval() -> TimeInterval {
         switch difficulty {
         case .Easy:
             return 6
