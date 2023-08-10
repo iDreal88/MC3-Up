@@ -14,7 +14,6 @@ class GameScene: SKScene {
     var starField: SKEmitterNode!
     var balloon: SKSpriteNode!
     var scoreLabel: SKLabelNode!
-    
     let difficultManager = DifficultyManager()
     
     var score: Int = 0 {
@@ -23,21 +22,19 @@ class GameScene: SKScene {
         }
     }
     
-//    let torpedoSoundAction: SKAction = SKAction.playSoundFileNamed("torpedo.mp3", waitForCompletion: false)
+    //    let torpedoSoundAction: SKAction = SKAction.playSoundFileNamed("torpedo.mp3", waitForCompletion: false)
     var gameTimer: Timer!
     var spikes1 = ["left_spike"]
     var spikes2 = ["right_spike"]
-    let spikeCategory: UInt32 = 0x1 << 1
-    let torpedoCategory: UInt32 = 0x1 << 0
-    
+    let spikeCategory: UInt32 = 1
+    let ballonCategory: UInt32 = 2
     let motionManager = CMMotionManager()
     var xAcceleration: CGFloat = 0
-    
     var livesArray: [SKSpriteNode]!
-    
     let userDefaults = UserDefaults.standard
     
     override func didMove(to view: SKView) {
+        //        physicsWorld.contactDelegate = self
         setupLives()
         setupStarField()
         setupBalloon()
@@ -48,13 +45,12 @@ class GameScene: SKScene {
     }
     
     func updateScore(balloonNode: SKSpriteNode, spikeNode: SKSpriteNode) {
-         let balloonMaxY = balloonNode.position.y + balloonNode.size.height / 2
-         let spikeMinY = spikeNode.position.y - spikeNode.size.height / 2
-         
-         if balloonMaxY > spikeMinY {
-             score += 1 // Update the score when balloon passes through a spike
-         }
-     }
+        let balloonMaxY = balloonNode.position.y + balloonNode.size.height / 2
+        let spikeMinY = spikeNode.position.y - spikeNode.size.height / 2
+        if balloonMaxY > spikeMinY {
+            score += 1 // Update the score when balloon passes through a spike
+        }
+    }
     
     func setupLives() {
         livesArray = [SKSpriteNode]()
@@ -66,7 +62,6 @@ class GameScene: SKScene {
             self.addChild(lifeNode)
             livesArray.append(lifeNode)
         }
-        
     }
     
     func setupCoreMotion() {
@@ -76,7 +71,6 @@ class GameScene: SKScene {
                 let acceleration = accelerometerData.acceleration
                 self.xAcceleration = CGFloat(acceleration.x) * 0.10 + self.xAcceleration * 0.10
             }
-            
         }
     }
     
@@ -88,7 +82,6 @@ class GameScene: SKScene {
     
     func setupStarField() {
         starField = SKEmitterNode(fileNamed: "Starfield")
-        
         starField.position = CGPoint(x: 0, y: self.frame.maxY)
         starField.advanceSimulationTime(10)
         addChild(starField)
@@ -100,6 +93,10 @@ class GameScene: SKScene {
         balloon.size = CGSize(width: 80, height: 80)
         balloon.position = CGPoint(x: frame.size.width / 2, y: balloon.size.height / 2 + 20)
         addChild(balloon)
+        balloon.name = "balloon"
+        balloon.physicsBody = SKPhysicsBody(circleOfRadius: balloon.size.width/2.5)
+        balloon.physicsBody?.categoryBitMask = ballonCategory
+        balloon.physicsBody?.contactTestBitMask = spikeCategory
     }
     
     func setupScoreLabel() {
@@ -121,153 +118,148 @@ class GameScene: SKScene {
         //Shuffled array of spikes
         spikes1 = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: spikes1) as! [String]
         let spike1 = SKSpriteNode(imageNamed: spikes1[0])
-        let spikePosition1 = GKRandomDistribution(lowestValue: 0, highestValue: Int(frame.size.width)/2)
+        let spikePosition1 = GKRandomDistribution(lowestValue: 0, highestValue: Int(frame.size.width)/2 - Int(balloon.size.width))
         let position1 = CGFloat(spikePosition1.nextInt())
         spike1.size = CGSize(width: 80, height: 60)
         spike1.position = CGPoint(x: position1, y: frame.size.height + spike1.size.height)
         spike1.physicsBody = SKPhysicsBody(circleOfRadius: spike1.size.width/2)
         
         spike1.physicsBody?.categoryBitMask = spikeCategory
-        spike1.physicsBody?.contactTestBitMask = torpedoCategory
-        spike1.physicsBody?.collisionBitMask = 0
+        spike1.physicsBody?.contactTestBitMask = ballonCategory
+        //        spike1.physicsBody?.collisionBitMask = 0
+        spike1.name = "spike"
         
         addChild(spike1)
         
         spikes2 = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: spikes2) as! [String]
         let spike2 = SKSpriteNode(imageNamed: spikes2[0])
-        let spikePosition2 = GKRandomDistribution(lowestValue: Int(frame.size.width)/2, highestValue: Int(frame.size.width))
+        let spikePosition2 = GKRandomDistribution(lowestValue: Int(frame.size.width)/2 , highestValue: Int(frame.size.width) )
         let position2 = CGFloat(spikePosition2.nextInt())
         spike2.size = CGSize(width: 80, height: 60)
         spike2.position = CGPoint(x: position2, y: frame.size.height + spike2.size.height)
-            spike2.physicsBody = SKPhysicsBody(circleOfRadius: spike2.size.width/2)
+        spike2.physicsBody = SKPhysicsBody(circleOfRadius: spike2.size.width/2)
         
         spike2.physicsBody?.categoryBitMask = spikeCategory
-        spike2.physicsBody?.contactTestBitMask = torpedoCategory
-        spike2.physicsBody?.collisionBitMask = 0
+        spike2.physicsBody?.contactTestBitMask = ballonCategory
+        //        spike2.physicsBody?.collisionBitMask = 0
+        spike2.name = "spike"
         
         addChild(spike2)
         
-        let animationDuration = difficultManager.getSpikeAnimationDurationInterval()
-        
-        var actionArray1 = [SKAction]()
-        actionArray1.append(SKAction.move(to: CGPoint(x: position1, y: -spike1.size.height), duration: animationDuration))
-       
-        actionArray1.append(SKAction.run(spikeGotBase))
-        actionArray1.append(SKAction.removeFromParent())
-        
-        var actionArray2 = [SKAction]()
-        actionArray2.append(SKAction.move(to: CGPoint(x: position2, y: -spike2.size.height), duration: animationDuration))
-        
-        actionArray2.append(SKAction.run(spikeGotBase))
-        actionArray2.append(SKAction.removeFromParent())
-        
-        spike1.run(SKAction.sequence(actionArray1))
-        spike2.run(SKAction.sequence(actionArray2))
-    }
-    
-    func spikeGotBase() {
-//        run(SKAction.playSoundFileNamed("looseLife.mp3", waitForCompletion: false))
-        if livesArray.count > 0 {
-            let lifeNode = livesArray.first
-//            lifeNode?.removeFromParent()
-//            livesArray.removeFirst()
+        if spike2.position.x - spike1.position.x < 80  && spike2.position.x - spike1.position.x > 160{
+            repeat {
+                let spikePosition1 = GKRandomDistribution(lowestValue: 0, highestValue: Int(frame.size.width)/2 - Int(balloon.size.width))
+                let position1 = CGFloat(spikePosition1.nextInt())
+                spike1.position = CGPoint(x: position1, y: frame.size.height + spike1.size.height)
+                
+                let spikePosition2 = GKRandomDistribution(lowestValue: Int(frame.size.width)/2 , highestValue: Int(frame.size.width) )
+                let position2 = CGFloat(spikePosition2.nextInt())
+                spike2.position = CGPoint(x: position2, y: frame.size.height + spike2.size.height)
+                
+            } while spike2.position.x - spike1.position.x < 80 && spike2.position.x - spike1.position.x > 160
+            
+            let animationDuration = difficultManager.getSpikeAnimationDurationInterval()
+            
+            var actionArray1 = [SKAction]()
+            actionArray1.append(SKAction.move(to: CGPoint(x: position1, y: -spike1.size.height), duration: animationDuration))
+            
+            
+            actionArray1.append(SKAction.removeFromParent())
+            
+            var actionArray2 = [SKAction]()
+            actionArray2.append(SKAction.move(to: CGPoint(x: position2, y: -spike2.size.height), duration: animationDuration))
+            
+            
+            actionArray2.append(SKAction.removeFromParent())
+            
+            spike1.run(SKAction.sequence(actionArray1))
+            spike2.run(SKAction.sequence(actionArray2))
+            
         }
-        if livesArray.count == 0 {
-            let transition = SKTransition.flipHorizontal(withDuration: 0.5)
-            let gameScene = SKScene(fileNamed: "GameOver") as! GameOver
-            gameScene.score = self.score
-            self.view?.presentScene(gameScene, transition: transition)
+        else{
+            let animationDuration = difficultManager.getSpikeAnimationDurationInterval()
+            
+            var actionArray1 = [SKAction]()
+            actionArray1.append(SKAction.move(to: CGPoint(x: position1, y: -spike1.size.height), duration: animationDuration))
+            
+            
+            actionArray1.append(SKAction.removeFromParent())
+            
+            var actionArray2 = [SKAction]()
+            actionArray2.append(SKAction.move(to: CGPoint(x: position2, y: -spike2.size.height), duration: animationDuration))
+            
+            
+            actionArray2.append(SKAction.removeFromParent())
+            
+            spike1.run(SKAction.sequence(actionArray1))
+            spike2.run(SKAction.sequence(actionArray2))
         }
     }
     
-    override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
-    }
-    
-//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        fireTorpedo()
-//    }
-    
-//    func fireTorpedo() {
-//        let torpedoNode = SKSpriteNode(imageNamed: "torpedo")
-//        torpedoNode.position = player.position
-//        torpedoNode.position.y += 5
-//        torpedoNode.size = CGSize(width: 30, height: 30)
-//        torpedoNode.physicsBody = SKPhysicsBody(circleOfRadius: torpedoNode.size.width/2)
-//
-//        torpedoNode.physicsBody?.categoryBitMask = torpedoCategory
-//        torpedoNode.physicsBody?.contactTestBitMask = balloonCategory
-//        torpedoNode.physicsBody?.collisionBitMask = 0
-//        torpedoNode.physicsBody?.usesPreciseCollisionDetection = true
-//
-//        addChild(torpedoNode)
-//
-//        let animationDuration = 1.0
-//
-//        var actionArray = [SKAction]()
-//        actionArray.append(torpedoSoundAction)
-//        actionArray.append(SKAction.move(to: CGPoint(x: player.position.x, y: frame.size.height + torpedoNode.size.height), duration: animationDuration))
-//        actionArray.append(SKAction.removeFromParent())
-//        torpedoNode.run(SKAction.sequence(actionArray))
-//    }
+    //    func spikeGotBase() {
+    ////        run(SKAction.playSoundFileNamed("looseLife.mp3", waitForCompletion: false))
+    //        if livesArray.count > 0 {
+    //            let lifeNode = livesArray.first
+    //            lifeNode?.removeFromParent()
+    //            livesArray.removeFirst()
+    //        }
+    //        if livesArray.count == 0 {
+    //            let transition = SKTransition.flipHorizontal(withDuration: 0.5)
+    //            let gameScene = SKScene(fileNamed: "GameOver") as! GameOver
+    //            gameScene.score = self.score
+    //            self.view?.presentScene(gameScene, transition: transition)
+    //        }
+    //    }
+    //
+    //    override func update(_ currentTime: TimeInterval) {
+    //        // Called before each frame is rendered
+    //    }
 }
 
 extension GameScene: SKPhysicsContactDelegate {
-//    func didBegin(_ contact: SKPhysicsContact) {
-//        var bodyWithMaxCategoryBitMask: SKPhysicsBody
-//        var bodyWithMinCategoryBitMask: SKPhysicsBody
-//
-//        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
-//            bodyWithMaxCategoryBitMask = contact.bodyA
-//            bodyWithMinCategoryBitMask = contact.bodyB
-//        } else {
-//            bodyWithMaxCategoryBitMask =  contact.bodyB
-//            bodyWithMinCategoryBitMask = contact.bodyA
-//        }
-//        let isTorpedoBody = (bodyWithMaxCategoryBitMask.categoryBitMask & torpedoCategory) != 0
-//        let isSpikeBody = (bodyWithMinCategoryBitMask.categoryBitMask & spikeCategory) != 0
-//
-//        if  isTorpedoBody && isSpikeBody {
-//            guard let torpedoNode = bodyWithMaxCategoryBitMask.node else {return}
-//            guard let spikedNode = bodyWithMinCategoryBitMask.node else {return}
-//            torpedoDidCollideWithSpike(torpedoNode: torpedoNode as! SKSpriteNode, spikeNode: spikedNode as! SKSpriteNode)
-//        }
-//
-//    }
+    func didBegin(_ contact: SKPhysicsContact) {
+        guard let nodeA = contact.bodyA.node else { return }
+        guard let nodeB = contact.bodyB.node else { return }
+        
+        if nodeA.name == "balloon" {
+            collisionBetween(ball: nodeA, object: nodeB)
+        } else if nodeB.name == "balloon" {
+            collisionBetween(ball: nodeB, object: nodeA)
+        }
+    }
     
-//    func torpedoDidCollideWithSpike(torpedoNode: SKSpriteNode, spikeNode: SKSpriteNode) {
-//        let explosion = SKEmitterNode(fileNamed: "Explosion")!
-//        explosion.position = spikeNode.position
-//        addChild(explosion)
-//
-//        run(SKAction.playSoundFileNamed("explosion.mp3", waitForCompletion: false))
-//
-//        torpedoNode.removeFromParent()
-//        spikeNode.removeFromParent()
-//
-//        run(SKAction.wait(forDuration: 1)) {
-//            explosion.removeFromParent()
-//        }
-//        score += 5
-//    }
+    func collisionBetween(ball: SKNode, object: SKNode) {
+        if object.name == "spike" {
+            if livesArray.count > 0 {
+                let lifeNode = livesArray.first
+                lifeNode?.removeFromParent()
+                livesArray.removeFirst()
+            }
+            if livesArray.count == 0 {
+                let transition = SKTransition.flipHorizontal(withDuration: 0.5)
+                let gameScene = SKScene(fileNamed: "GameOver") as! GameOver
+                gameScene.score = self.score
+                self.view?.presentScene(gameScene, transition: transition)
+            }
+        }
+    }
     
     override func didSimulatePhysics() {
         balloon.position.x += xAcceleration * 50
+        
+        enumerateChildNodes(withName: "spike") { (spike, _) in
+                if let spikeNode = spike as? SKSpriteNode {
+                    if spikeNode.position.y + spikeNode.size.height / 2 < self.balloon.position.y - self.balloon.size.height / 2 {
+                        // Balloon has passed the spike
+                        self.updateScore(balloonNode: self.balloon, spikeNode: spikeNode)
+                    }
+                }
+            }
+        
         if balloon.position.x <= 20 {
             balloon.position.x = 20
         } else if balloon.position.x >= frame.size.width - 20 {
             balloon.position.x = frame.size.width - 20
         }
-        
-        // Loop through all children (balloon nodes) in the scene
-        for node in children {
-            if let spikeNode = node as? SKSpriteNode {
-                if spikeNode.physicsBody?.categoryBitMask == spikeCategory {
-                    // Check if the spaceship passed through the balloon
-                    updateScore(balloonNode: balloon, spikeNode: spikeNode)
-                }
-            }
-        }
     }
-
 }
