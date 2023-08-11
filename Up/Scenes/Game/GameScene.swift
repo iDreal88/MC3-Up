@@ -133,7 +133,7 @@ class GameScene: SKScene {
         
         spikes2 = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: spikes2) as! [String]
         let spike2 = SKSpriteNode(imageNamed: spikes2[0])
-        let spikePosition2 = GKRandomDistribution(lowestValue: Int(frame.size.width)/2 , highestValue: Int(frame.size.width) )
+        let spikePosition2 = GKRandomDistribution(lowestValue: Int(frame.size.width)/2 + 20 , highestValue: Int(frame.size.width) )
         let position2 = CGFloat(spikePosition2.nextInt())
         spike2.size = CGSize(width: 80, height: 60)
         spike2.position = CGPoint(x: position2, y: frame.size.height + spike2.size.height)
@@ -145,8 +145,8 @@ class GameScene: SKScene {
         spike2.name = "spike"
         
         addChild(spike2)
-        
-        if spike2.position.x - spike1.position.x < 80  && spike2.position.x - spike1.position.x > 160{
+        if spike2.position.x - spike1.position.x < balloon.size.width + 40  || spike2.position.x - spike1.position.x > (balloon.size.width + 20) * 2{
+            print(spike2.position.x - spike1.position.x)
             repeat {
                 let spikePosition1 = GKRandomDistribution(lowestValue: 0, highestValue: Int(frame.size.width)/2 - Int(balloon.size.width))
                 let position1 = CGFloat(spikePosition1.nextInt())
@@ -156,14 +156,11 @@ class GameScene: SKScene {
                 let position2 = CGFloat(spikePosition2.nextInt())
                 spike2.position = CGPoint(x: position2, y: frame.size.height + spike2.size.height)
                 
-            } while spike2.position.x - spike1.position.x < 80 && spike2.position.x - spike1.position.x > 160
-            
+            } while spike2.position.x - spike1.position.x < balloon.size.width + 20 || spike2.position.x - spike1.position.x > (balloon.size.width + 20) * 2
+            print(spike2.position.x - spike1.position.x)
             let animationDuration = difficultManager.getSpikeAnimationDurationInterval()
-            
             var actionArray1 = [SKAction]()
             actionArray1.append(SKAction.move(to: CGPoint(x: position1, y: -spike1.size.height), duration: animationDuration))
-            
-            
             actionArray1.append(SKAction.removeFromParent())
             
             var actionArray2 = [SKAction]()
@@ -232,8 +229,8 @@ extension GameScene: SKPhysicsContactDelegate {
         if object.name == "spike" {
             if livesArray.count > 0 {
                 let lifeNode = livesArray.first
-                lifeNode?.removeFromParent()
-                livesArray.removeFirst()
+//                lifeNode?.removeFromParent()
+//                livesArray.removeFirst()
             }
             if livesArray.count == 0 {
                 let transition = SKTransition.flipHorizontal(withDuration: 0.5)
