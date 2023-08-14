@@ -8,12 +8,26 @@
 import UIKit
 import SpriteKit
 import GameplayKit
+import Foundation
+import GameKit
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, GameCenterHelperDelegate {
+    func didChangeAuthStatus(isAuthenticated: Bool) {
+        <#code#>
+    }
+    
+    func presentGameCenterAuth(viewController: UIViewController?) {
+        <#code#>
+    }
+    
+    private var gameKitHelper: GameKitHelper!
     
     override func viewDidLoad() {
-        super.viewDidLoad()
         
+        super.viewDidLoad()
+        gameKitHelper = GameKitHelper()
+        gameKitHelper.delegate = self
+        gameKitHelper.authenticatePlayer()
         if let view = self.view as! SKView?, let scene = MenuScene(fileNamed: "MenuScene") {
             
             // Set the scale mode to scale to fit the window
@@ -29,5 +43,5 @@ class GameViewController: UIViewController {
             //view.showsPhysics = true
         }
     }
-    
+
 }

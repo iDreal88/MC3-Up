@@ -6,6 +6,7 @@
 //
 
 import SpriteKit
+import GameKit
 
 class MenuScene: SKScene {
     
@@ -18,6 +19,7 @@ class MenuScene: SKScene {
     
     let newGameButtonName = "newGameButton"
     let difficultyButtonName = "difficultyButton"
+    let leaderboardButtonName = "leaderboardButton"
     
     let userDefaults = UserDefaults.standard
     
