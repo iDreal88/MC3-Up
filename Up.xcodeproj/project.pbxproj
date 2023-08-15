@@ -26,6 +26,7 @@
 		58D3BCA62A74D76A00F0DCF5 /* Explosion.sks in Resources */ = {isa = PBXBuildFile; fileRef = 58D3BCA32A74D76A00F0DCF5 /* Explosion.sks */; };
 		58D3BCA72A74D76A00F0DCF5 /* gameOver.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 58D3BCA42A74D76A00F0DCF5 /* gameOver.mp3 */; };
 		58F8BB3C2A74D629004EB276 /* Starfield.sks in Resources */ = {isa = PBXBuildFile; fileRef = 58F8BB3B2A74D629004EB276 /* Starfield.sks */; };
+		6210DAC72A862E8A00DA7D10 /* randomFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6210DAC62A862E8A00DA7D10 /* randomFunction.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		58D3BCA32A74D76A00F0DCF5 /* Explosion.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Explosion.sks; sourceTree = "<group>"; };
 		58D3BCA42A74D76A00F0DCF5 /* gameOver.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = gameOver.mp3; sourceTree = "<group>"; };
 		58F8BB3B2A74D629004EB276 /* Starfield.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Starfield.sks; sourceTree = "<group>"; };
+		6210DAC62A862E8A00DA7D10 /* randomFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = randomFunction.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				5893398C2A73A3F900F36749 /* GameScene.swift */,
+				6210DAC62A862E8A00DA7D10 /* randomFunction.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -263,6 +266,7 @@
 				589339872A73A3F900F36749 /* AppDelegate.swift in Sources */,
 				589339A72A74D0F400F36749 /* DifficultyManager.swift in Sources */,
 				589339B42A74D35B00F36749 /* Constants.swift in Sources */,
+				6210DAC72A862E8A00DA7D10 /* randomFunction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,7 +413,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 44349BA3CD;
+				DEVELOPMENT_TEAM = 76R642B56V;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Up;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.arcade-games";
@@ -424,7 +428,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ada.Up;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ada.MC3-Up";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -442,7 +446,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = PTBV7SSAVK;
+				DEVELOPMENT_TEAM = 76R642B56V;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Up;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.arcade-games";
@@ -457,7 +461,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ada.Up;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ada.MC3-Up";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
