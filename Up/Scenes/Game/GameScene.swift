@@ -14,19 +14,14 @@ struct PhysicsCatagory {
     static let Balloon : UInt32 = 10
     static let Spike : UInt32 = 20
     static let Space : UInt32 = 30
-    
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-    
-    
-    
-    
     var starField: SKEmitterNode!
     var balloon: SKSpriteNode!
     var scoreLabel: SKLabelNode!
     let difficultManager = DifficultyManager()
-    var spikePair = SKNode()
+    var spikePair = SKSpriteNode()
     var score: Int = 0 {
         didSet {
             scoreLabel.text = "Score: \(score)"
@@ -45,7 +40,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let userDefaults = UserDefaults.standard
     
     override func didMove(to view: SKView) {
-                physicsWorld.contactDelegate = self
+        physicsWorld.contactDelegate = self
         setupLives()
         setupStarField()
         setupBalloon()
@@ -56,12 +51,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func updateScore() {
-        let balloonMaxY = balloon.position.y + balloon.size.height / 2
-        let spikeMinY = spikePair.position.y - 30
-        if balloonMaxY > spikeMinY {
-            score += 1 // Update the score when balloon passes through a spike
+//            let balloonMaxY = balloon.position.y + balloon.size.height / 2
+//            let spikeMinY = spikePair.position.y - spikePair.size.height / 2
+//            if balloonMaxY > spikeMinY {
+                score += 1 // Update the score when balloon passes through a spike
+//            }
         }
-    }
     
     func setupLives() {
         livesArray = [SKSpriteNode]()
@@ -206,15 +201,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //            spike2.run(SKAction.sequence(actionArray2))
         //        }
         //    }
-        spikePair = SKNode()
+        spikePair = SKSpriteNode()
         spikePair.name = "spikePair"
+        spikePair.position = CGPoint(x: 0, y: self.frame.height)
+        print("yyyyy", spikePair.position.y)
         
         let leftSpike = SKSpriteNode(imageNamed: "spike")
         let rightSpike = SKSpriteNode(imageNamed: "spike")
         let midSpace = SKSpriteNode(imageNamed: "space")
-        leftSpike.position = CGPoint(x: self.frame.width / 2 + 180, y: self.frame.height )
-        midSpace.position = CGPoint(x: self.frame.width / 2 , y: self.frame.height )
-        rightSpike.position = CGPoint(x: self.frame.width / 2 - 180, y: self.frame.height)
+        leftSpike.position = CGPoint(x:  self.frame.width / 2 + 180, y: 0 )
+        midSpace.position = CGPoint(x: self.frame.width / 2 , y:0  )
+        rightSpike.position = CGPoint(x: self.frame.width / 2 - 180  , y: 0)
+        print("leftspike", leftSpike.position.x)
         
         leftSpike.setScale(0.5)
         midSpace.setScale(0.5)
@@ -230,17 +228,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         leftSpike.physicsBody?.isDynamic = false
         leftSpike.physicsBody?.affectedByGravity = false
         
-//        midSpace.physicsBody = SKPhysicsBody(rectangleOf: midSpace.size)
-//        midSpace.physicsBody?.categoryBitMask = PhysicsCatagory.Space
-//        midSpace.physicsBody?.contactTestBitMask = PhysicsCatagory.Balloon
-//        midSpace.physicsBody?.isDynamic = false
-//        midSpace.physicsBody?.affectedByGravity = false
-//
-//        var coba = SKPhysicsBody(rectangleOf: midSpace.size)
-//        coba.categoryBitMask = PhysicsCatagory.Space
-//        coba.contactTestBitMask = PhysicsCatagory.Balloon
-////        coba.collisionBitMask = PhysicsCatagory.None
-//        midSpace.physicsBody = coba
+        //        midSpace.physicsBody = SKPhysicsBody(rectangleOf: midSpace.size)
+        //        midSpace.physicsBody?.categoryBitMask = PhysicsCatagory.Space
+        //        midSpace.physicsBody?.contactTestBitMask = PhysicsCatagory.Balloon
+        //        midSpace.physicsBody?.isDynamic = false
+        //        midSpace.physicsBody?.affectedByGravity = false
+        //
+        //        var coba = SKPhysicsBody(rectangleOf: midSpace.size)
+        //        coba.categoryBitMask = PhysicsCatagory.Space
+        //        coba.contactTestBitMask = PhysicsCatagory.Balloon
+        ////        coba.collisionBitMask = PhysicsCatagory.None
+        //        midSpace.physicsBody = coba
         midSpace.isHidden=true
         
         rightSpike.physicsBody = SKPhysicsBody(rectangleOf: rightSpike.size)
@@ -259,16 +257,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         let randomPosition = difficultManager.getRandomNumber()
-        spikePair.position.x = spikePair.position.y +  randomPosition
+        spikePair.position.x = spikePair.position.x + randomPosition
+        print("leftspike new", leftSpike.position.x)
         
-        
+        self.addChild(spikePair)
         let animationDuration = difficultManager.getSpikeAnimationDurationInterval()
         let distance = CGFloat(self.frame.height + spikePair.frame.height)
         let actionMove = SKAction.move(to: CGPoint(x: spikePair.position.x, y: -distance - 50), duration: animationDuration)
         let actionRemove = SKAction.removeFromParent()
         spikePair.run(SKAction.sequence([actionMove, actionRemove]))
         
-        self.addChild(spikePair)
+        
         //    func spikeGotBase() {
         ////        run(SKAction.playSoundFileNamed("looseLife.mp3", waitForCompletion: false))
         //        if livesArray.count > 0 {
@@ -299,7 +298,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         } else if nodeB.name == "balloon" {
             collisionBetween(ball: nodeB, object: nodeA)
         }
-        print("detect")
         if livesArray.count > 0 {
             let lifeNode = livesArray.first
             lifeNode?.removeFromParent()
@@ -316,36 +314,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //
     func collisionBetween(ball: SKNode, object: SKNode) {
         if object.name == "spike" {
-//            if livesArray.count > 0 {
-//                let lifeNode = livesArray.first
-//                lifeNode?.removeFromParent()
-//                livesArray.removeFirst()
-//            }
-//            if livesArray.count == 0 {
-//                let transition = SKTransition.flipHorizontal(withDuration: 0.5)
-//                let gameScene = SKScene(fileNamed: "GameOver") as! GameOver
-//                gameScene.score = self.score
-//                self.view?.presentScene(gameScene, transition: transition)
-//            }
+            //            if livesArray.count > 0 {
+            //                let lifeNode = livesArray.first
+            //                lifeNode?.removeFromParent()
+            //                livesArray.removeFirst()
+            //            }
+            //            if livesArray.count == 0 {
+            //                let transition = SKTransition.flipHorizontal(withDuration: 0.5)
+            //                let gameScene = SKScene(fileNamed: "GameOver") as! GameOver
+            //                gameScene.score = self.score
+            //                self.view?.presentScene(gameScene, transition: transition)
+            //            }
         }
     }
     //
     override func didSimulatePhysics() {
         balloon.position.x += xAcceleration * 50
+        
         var passedSpikes = Set<SKSpriteNode>()
-        enumerateChildNodes(withName: "spike") { (spike, _) in
-            if let spikeNode = self.spikePair as? SKSpriteNode {
-                if spikeNode.position.y + spikeNode.size.height / 2 < self.balloon.position.y - self.balloon.size.height / 2 {
-                    // Balloon has passed the spike
-//                    self.updateScore(balloonNode: self.balloon, spikeNode: spikeNode)
-                    passedSpikes.insert(spikeNode)
+        
+        enumerateChildNodes(withName: "spikePair") { (spike, _) in
+            if let spikeNode = spike as? SKSpriteNode {
+                
+//                print("Position Balon:", self.balloon.position)
+//                print("Position Spike:", spikeNode.position)
+                if abs(spikeNode.position.y)  > self.balloon.position.y && abs(spikeNode.position.y)  < self.balloon.position.y + 2 {
+                    print("Pass find \(self.balloon.position.y) = \(spikeNode.position.y)")
+                    // Balloon has passed the spike pair
+//                    passedSpikes.insert(spikeNode)
+                    self.updateScore()
+
+//                    self.updateScore()
                 }
             }
         }
+
         for passedSpike in passedSpikes {
-            updateScore()
-            
-            passedSpike.removeFromParent()
+//            print("pas")
+//            updateScore()
+//            passedSpike.removeFromParent()
         }
         
         if balloon.position.x <= 20 {
@@ -354,5 +361,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             balloon.position.x = frame.size.width - 20
         }
     }
+
     
 }
