@@ -23,7 +23,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     var weatherKitManager = WeatherKitManager()
     var locationManager = LocationManager()
-    var background = SKSpriteNode(imageNamed: "Sunny")
+    
     var starField: SKEmitterNode!
     var rainField: SKEmitterNode!
     var balloon: SKSpriteNode!
@@ -108,10 +108,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func setupPhisicsWord() {
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
-        background.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
-        addChild(background)
-        background.zPosition = -2
-        background.alpha = 0.7
+        
+        if (weatherKitManager.condition == "Heavy Rain" || weatherKitManager.condition == "Rain"){
+            let background = SKSpriteNode(imageNamed: "Sunny")
+            background.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
+            addChild(background)
+            background.zPosition = -2
+            background.alpha = 0.5
+        }else if(weatherKitManager.condition == "Blizzard" || weatherKitManager.condition == "Blowing Snow" || weatherKitManager.condition == "Heavy Snow" || weatherKitManager.condition == "Freezing Rain" || weatherKitManager.condition == "Freezing Drizzle"){
+            let background = SKSpriteNode(imageNamed: "Winter")
+            background.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
+            addChild(background)
+            background.zPosition = -2
+            background.alpha = 1
+        }else{
+            let background = SKSpriteNode(imageNamed: "Sunny")
+            background.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
+            addChild(background)
+            background.zPosition = -2
+            background.alpha = 1
+        }
+        
 
     }
     
@@ -120,22 +137,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             do{
                 try await weatherKitManager.getWeather(latitude:locationManager.latitude, longitude:locationManager.longitude)
                 print("Weather Game Scene: ",weatherKitManager.condition)
-                if (weatherKitManager.condition == "Mostly Clear" || weatherKitManager.condition == "Clear"){
-                    starField = SKEmitterNode(fileNamed: "Rain")
-                    starField.position = CGPoint(x: 0, y: self.frame.maxY)
-                    starField.advanceSimulationTime(10)
-                    addChild(starField)
-                    starField.zPosition = -1
-                }else if (weatherKitManager.condition == "Heavy Rain" || weatherKitManager.condition == "Rain"){
-                    rainField = SKEmitterNode(fileNamed: "Fireflies")
+                if (weatherKitManager.condition == "Heavy Rain" || weatherKitManager.condition == "Rain"){
+                    rainField = SKEmitterNode(fileNamed: "Rain")
                     rainField.position = CGPoint(x: 0, y: self.frame.maxY)
                     rainField.advanceSimulationTime(10)
                     addChild(rainField)
                     rainField.zPosition = -1
+                }else if(weatherKitManager.condition == "Blizzard" || weatherKitManager.condition == "Blowing Snow" || weatherKitManager.condition == "Heavy Snow" || weatherKitManager.condition == "Freezing Rain" || weatherKitManager.condition == "Freezing Drizzle"){
+                    starField = SKEmitterNode(fileNamed: "Snow")
+                    starField.position = CGPoint(x: 0, y: self.frame.maxY)
+                    starField.advanceSimulationTime(10)
+                    addChild(starField)
+                    starField.zPosition = -1
                 }else{
-                    print("test",weatherKitManager.condition)
-                    print(locationManager.latitude)
-                    print(locationManager.longitude)
+                    
                 }
             }catch{
                 
