@@ -21,6 +21,13 @@ class GameOver: SKScene {
         setupScoreNumberLabel()
         setupNewGameButton()
         setupMenuButtonNode()
+        saveLeaderboard()
+    }
+    
+    func saveLeaderboard(){
+        let leaderboardID = "com.ada.Up.Score"
+        let scores = score
+        GameCenterManager.shared.saveScoreToLeaderboard(leaderboardID: leaderboardID, score: scores)
     }
     
     func setupMenuButtonNode() {

@@ -20,9 +20,11 @@ class MenuScene: SKScene {
     var difficultyLabelNode: SKLabelNode!
     var gameTitleLabelNode: SKLabelNode!
     var tempLabelNode: SKLabelNode!
+    var leaderboardButtonNode: SKSpriteNode!
     
     let newGameButtonName = "newGameButton"
     let difficultyButtonName = "difficultyButton"
+    let leaderboardButtonName = "leaderboardButton"
     
     let userDefaults = UserDefaults.standard
     
@@ -44,7 +46,7 @@ class MenuScene: SKScene {
         setupNewGameButtonNode()
         setupDifficultyButtonNode()
         setupDifficultLabelNode()
-        
+        setupLeaderboardButtonNode()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -69,6 +71,8 @@ class MenuScene: SKScene {
             }
         } else if nodesArray.first?.name == difficultyButtonName {
             changeDifficulty()
+        } else{
+            showingLeaderboard()
         }
         
     }
@@ -114,6 +118,13 @@ class MenuScene: SKScene {
         }
     }
     
+    private func setupLeaderboardButtonNode() {
+        leaderboardButtonNode = self.childNode(withName: leaderboardButtonName) as? SKSpriteNode
+        leaderboardButtonNode.texture = SKTexture(imageNamed: difficultyButtonName)
+        let yPosition = leaderboardButtonNode.position.y
+        leaderboardButtonNode.position = CGPoint(x: frame.size.width/2, y: yPosition)
+    }
+    
     func changeDifficulty() {
         guard let difficulty = DifficultyOptions(rawValue: difficultyLabelNode.text!) else { return }
         switch difficulty {
@@ -129,6 +140,9 @@ class MenuScene: SKScene {
         }
     }
     
+    func showingLeaderboard(){
+        GameCenterManager.shared.showLeaderboard()
+    }
     
 }
 
