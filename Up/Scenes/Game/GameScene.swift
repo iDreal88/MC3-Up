@@ -20,17 +20,10 @@ struct PhysicsCatagory {
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-<<<<<<< HEAD
-=======
-    
-    
-    
-    
 
     var weatherKitManager = WeatherKitManager()
     var locationManager = LocationManager()
     var background = SKSpriteNode(imageNamed: "Sunny")
->>>>>>> fdf9fb7308dd4e3afc932f2c0a0cabf5de88476b
     var starField: SKEmitterNode!
     var rainField: SKEmitterNode!
     var balloon: SKSpriteNode!
@@ -71,13 +64,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let userDefaults = UserDefaults.standard
     
     override func didMove(to view: SKView) {
-<<<<<<< HEAD
         physicsWorld.contactDelegate = self
-=======
-
-        physicsWorld.contactDelegate = self
-
->>>>>>> fdf9fb7308dd4e3afc932f2c0a0cabf5de88476b
         setupLives()
         setupStarField()
         setupBalloon()
