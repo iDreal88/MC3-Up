@@ -31,7 +31,7 @@ class GameViewController: UIViewController {
                     view.ignoresSiblingOrder = true
         //            view.showsFPS = true
         //            view.showsNodeCount = true
-                    view.showsPhysics = true
+//                    view.showsPhysics = true
                 }
             } else if let error = error {
                 print("Authentication error: \(error.localizedDescription)")

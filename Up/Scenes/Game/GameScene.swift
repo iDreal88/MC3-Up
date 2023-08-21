@@ -100,7 +100,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         motionManager.startAccelerometerUpdates(to: OperationQueue.current!) { (data: CMAccelerometerData?, error: Error?) in
             if let accelerometerData = data {
                 let acceleration = accelerometerData.acceleration
-                self.xAcceleration = CGFloat(acceleration.x) * 0.10 + self.xAcceleration * 0.10
+                self.xAcceleration = CGFloat(acceleration.x) * 0.10 + self.xAcceleration * 0.50
             }
         }
     }
@@ -163,7 +163,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func setupBalloon() {
         balloon = SKSpriteNode(imageNamed: "red_1")
         balloon.size = CGSize(width: 80, height: 80)
-        balloon.position = CGPoint(x: frame.size.width / 2, y: balloon.size.height / 2 + 20)
+        balloon.position = CGPoint(x: frame.size.width / 2, y: balloon.size.height / 2)
         addChild(balloon)
         balloon.name = "balloon"
         balloon.physicsBody = SKPhysicsBody(circleOfRadius: balloon.size.width/2.5)
