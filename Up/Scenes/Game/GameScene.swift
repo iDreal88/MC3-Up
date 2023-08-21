@@ -85,11 +85,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func setupLives() {
         livesArray = [SKSpriteNode]()
-        for life in 1...3 {
+        for life in 1...1 {
             let lifeNode = SKSpriteNode(imageNamed: "red_1")
             lifeNode.size = CGSize(width: 44, height: 44)
             lifeNode.zPosition = 5
             lifeNode.position = CGPoint(x: self.frame.size.width - CGFloat(4 - life) * lifeNode.size.width, y: frame.size.height - 50)
+            lifeNode.isHidden = true
             self.addChild(lifeNode)
             livesArray.append(lifeNode)
         }
@@ -163,7 +164,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func setupBalloon() {
         balloon = SKSpriteNode(imageNamed: "red_1")
         balloon.size = CGSize(width: 80, height: 80)
-        balloon.position = CGPoint(x: frame.size.width / 2, y: balloon.size.height / 2)
+        balloon.position = CGPoint(x: frame.size.width / 2, y: balloon.size.height + 50 )
         addChild(balloon)
         balloon.name = "balloon"
         balloon.physicsBody = SKPhysicsBody(circleOfRadius: balloon.size.width/2.5)
