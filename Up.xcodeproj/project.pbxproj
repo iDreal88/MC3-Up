@@ -303,9 +303,7 @@
 				589339872A73A3F900F36749 /* AppDelegate.swift in Sources */,
 				589339A72A74D0F400F36749 /* DifficultyManager.swift in Sources */,
 				589339B42A74D35B00F36749 /* Constants.swift in Sources */,
-
 				36F770E22A8CC1320000C844 /* GameCenterManager.swift in Sources */,
-
 				3634D6992A8A203D00C31903 /* LocationManager.swift in Sources */,
 				3634D69B2A8A221100C31903 /* WeatherKitManager.swift in Sources */,
 				6210DAC72A862E8A00DA7D10 /* randomFunction.swift in Sources */,
@@ -456,7 +454,7 @@
 				CODE_SIGN_ENTITLEMENTS = Up/Up.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = PTBV7SSAVK;
+				DEVELOPMENT_TEAM = 44349BA3CD;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Up/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Up;
@@ -473,7 +471,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ada.Up;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ada.MC3.Up;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -492,7 +490,7 @@
 				CODE_SIGN_ENTITLEMENTS = Up/Up.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = PTBV7SSAVK;
+				DEVELOPMENT_TEAM = 44349BA3CD;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Up/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Up;
@@ -509,7 +507,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ada.Up;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ada.MC3.Up;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
