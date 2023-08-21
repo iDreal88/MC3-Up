@@ -9,6 +9,9 @@ import SpriteKit
 import GameplayKit
 import CoreMotion
 
+
+    
+
 struct PhysicsCatagory {
     static let None: UInt32 = 0
     static let Balloon : UInt32 = 10
@@ -17,7 +20,19 @@ struct PhysicsCatagory {
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+<<<<<<< HEAD
+=======
+    
+    
+    
+    
+
+    var weatherKitManager = WeatherKitManager()
+    var locationManager = LocationManager()
+    var background = SKSpriteNode(imageNamed: "Sunny")
+>>>>>>> fdf9fb7308dd4e3afc932f2c0a0cabf5de88476b
     var starField: SKEmitterNode!
+    var rainField: SKEmitterNode!
     var balloon: SKSpriteNode!
     var scoreLabel: SKLabelNode!
     let difficultManager = DifficultyManager()
@@ -26,6 +41,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         didSet {
             scoreLabel.text = "Score: \(score)"
         }
+    }
+    
+    override init(size: CGSize) {
+        super.init(size: size)
+//        if locationManager.authorisationStatus == .authorizedWhenInUse{
+//            weatherKitManager.getWeather(latitude: locationManager.latitude, longitude: locationManager.longitude)
+//        }
+    }
+        
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    override func sceneDidLoad() {
+//        if locationManager.authorisationStatus == .authorizedWhenInUse{
+//            weatherKitManager.getWeather(latitude: locationManager.latitude, longitude: locationManager.longitude)
+//        }
     }
     
     //    let torpedoSoundAction: SKAction = SKAction.playSoundFileNamed("torpedo.mp3", waitForCompletion: false)
@@ -40,7 +71,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let userDefaults = UserDefaults.standard
     
     override func didMove(to view: SKView) {
+<<<<<<< HEAD
         physicsWorld.contactDelegate = self
+=======
+
+        physicsWorld.contactDelegate = self
+
+>>>>>>> fdf9fb7308dd4e3afc932f2c0a0cabf5de88476b
         setupLives()
         setupStarField()
         setupBalloon()
@@ -48,6 +85,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupScoreLabel()
         setupSpikes()
         setupCoreMotion()
+        
     }
     
     func updateScore() {
@@ -82,16 +120,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func setupPhisicsWord() {
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
-        //        physicsWorld.contactDelegate = self
-        backgroundColor = .black
+        physicsWorld.contactDelegate = self
+        background.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
+        addChild(background)
+        background.zPosition = -2
+        background.alpha = 0.7
+
     }
     
     func setupStarField() {
-        starField = SKEmitterNode(fileNamed: "Starfield")
-        starField.position = CGPoint(x: 0, y: self.frame.maxY)
-        starField.advanceSimulationTime(10)
-        addChild(starField)
-        starField.zPosition = -1
+        Task{
+            do{
+                try await weatherKitManager.getWeather(latitude:locationManager.latitude, longitude:locationManager.longitude)
+                print("Weather Game Scene: ",weatherKitManager.condition)
+                if (weatherKitManager.condition == "Mostly Clear" || weatherKitManager.condition == "Clear"){
+                    starField = SKEmitterNode(fileNamed: "Rain")
+                    starField.position = CGPoint(x: 0, y: self.frame.maxY)
+                    starField.advanceSimulationTime(10)
+                    addChild(starField)
+                    starField.zPosition = -1
+                }else if (weatherKitManager.condition == "Heavy Rain" || weatherKitManager.condition == "Rain"){
+                    rainField = SKEmitterNode(fileNamed: "Fireflies")
+                    rainField.position = CGPoint(x: 0, y: self.frame.maxY)
+                    rainField.advanceSimulationTime(10)
+                    addChild(rainField)
+                    rainField.zPosition = -1
+                }else{
+                    print("test",weatherKitManager.condition)
+                    print(locationManager.latitude)
+                    print(locationManager.longitude)
+                }
+            }catch{
+                
+            }
+        }
+        
+        
     }
     
     func setupBalloon() {
@@ -241,6 +305,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //        midSpace.physicsBody = coba
         midSpace.isHidden=true
         
+
         rightSpike.physicsBody = SKPhysicsBody(rectangleOf: rightSpike.size)
         rightSpike.physicsBody?.categoryBitMask = PhysicsCatagory.Spike
         rightSpike.physicsBody?.collisionBitMask = PhysicsCatagory.Balloon
