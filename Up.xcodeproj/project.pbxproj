@@ -454,7 +454,7 @@
 				CODE_SIGN_ENTITLEMENTS = Up/Up.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 44349BA3CD;
+				DEVELOPMENT_TEAM = PTBV7SSAVK;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Up/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Up;
@@ -471,7 +471,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ada.MC3.Up;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ada.Up;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -490,7 +490,7 @@
 				CODE_SIGN_ENTITLEMENTS = Up/Up.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 44349BA3CD;
+				DEVELOPMENT_TEAM = PTBV7SSAVK;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Up/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Up;
@@ -507,7 +507,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ada.MC3.Up;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ada.Up;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
