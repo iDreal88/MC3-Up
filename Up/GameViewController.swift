@@ -10,24 +10,41 @@ import SpriteKit
 import GameplayKit
 
 class GameViewController: UIViewController {
-    
+    var weatherKitManager = WeatherKitManager()
+    var locationManager = LocationManager()
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if let view = self.view as! SKView?, let scene = MenuScene(fileNamed: "MenuScene") {
+        GameCenterManager.shared.authenticatePlayer() {isAuthenticated, error in
+            if isAuthenticated {
+                if let view = self.view as! SKView?, let scene = MenuScene(fileNamed: "MenuScene") {
+                    
+                    // Set the scale mode to scale to fit the window
+                    scene.scaleMode = .aspectFill
+                    
+                    // Present the scene
+                    
+                        view.presentScene(scene)
+                    
+                    
+                    
+                    
+                    view.ignoresSiblingOrder = true
+        //            view.showsFPS = true
+        //            view.showsNodeCount = true
+//                    view.showsPhysics = true
+                }
+            } else if let error = error {
+                print("Authentication error: \(error.localizedDescription)")
+            }
             
-            // Set the scale mode to scale to fit the window
-            scene.scaleMode = .aspectFill
-            
-            // Present the scene
-            view.presentScene(scene)
-            
-            
-            view.ignoresSiblingOrder = true
-            view.showsFPS = true
-            view.showsNodeCount = true
-            //view.showsPhysics = true
         }
+//        print (gameCenterManager.isAuthenticated)
+//        if gameCenterManager.isAuthenticated{
+            
+//        }else{
+//            gameCenterManager.authenticatePlayer()
+//        }
+        
     }
     
 }

@@ -17,25 +17,36 @@ class DifficultyManager {
         }
     }
     
-    func getBalloonAparitionInterval() -> TimeInterval {
+    func getSpikeAparitionInterval() -> TimeInterval {
         switch difficulty {
         case .Easy:
-            return 0.75
+            return 1.50
         case .Medium:
-            return 0.50
+            return 1.50
         case .Hard:
-            return 0.30
+            return 1.00
         }
     }
     
-    func getBalloonAnimationDurationInterval() -> TimeInterval {
+    func getSpikeAnimationDurationInterval() -> TimeInterval {
         switch difficulty {
         case .Easy:
-            return 6
+            return 8
         case .Medium:
-            return 4.50
+            return 7
         case .Hard:
-            return 3
+            return 6
+        }
+    }
+    
+    func getRandomNumber() -> CGFloat {
+        switch difficulty {
+        case .Easy:
+            return CGFloat.random(min: -35, max: 35)
+        case .Medium:
+            return CGFloat.random(min: -65, max: 65)
+        case .Hard:
+            return CGFloat.random(min: -95, max: 95)
         }
     }
     
