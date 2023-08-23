@@ -6,8 +6,7 @@
 //
 
 import SpriteKit
-
-
+import AVFoundation
 
 class MenuScene: SKScene {
     var weatherKitManager = WeatherKitManager()
@@ -19,11 +18,13 @@ class MenuScene: SKScene {
     var difficultyButtonNode: SKSpriteNode!
     var difficultyLabelNode: SKLabelNode!
     var gameTitleLabelNode: SKSpriteNode!
+    var appleWeatherLabelNode: SKSpriteNode!
     var tempLabelNode: SKLabelNode!
     var leaderboardButtonNode: SKSpriteNode!
+    var backgroundMusicPlayer: AVAudioPlayer!
     
     let newGameButtonName = "newGameButton"
-//    let difficultyButtonName = "difficultyButton"
+    //    let difficultyButtonName = "difficultyButton"
     let leaderboardButtonName = "leaderboardButton"
     
     let userDefaults = UserDefaults.standard
@@ -43,11 +44,12 @@ class MenuScene: SKScene {
         //        setupTempTitleLabel()
         setupPhisicsWord()
         setupGameTitleLabel()
-//        setupStartField()
+        //        setupStartField()
         setupNewGameButtonNode()
-//        setupDifficultyButtonNode()
-//        setupDifficultLabelNode()
+        //        setupDifficultyButtonNode()
+        //        setupDifficultLabelNode()
         setupLeaderboardButtonNode()
+        setupMenuMusic()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -58,7 +60,9 @@ class MenuScene: SKScene {
         if nodesArray.first?.name == newGameButtonName {
             Task{
                 do{
+                    showLoadingScreen()
                     try await weatherKitManager.getWeather(latitude:locationManager.latitude, longitude:locationManager.longitude)
+                    hideLoadingScreen()
                     print(weatherKitManager.weather?.currentWeather)
                     let transition = SKTransition.flipHorizontal(withDuration: 0.5)
                     let gameScene = GameScene(size: self.size)
@@ -89,6 +93,11 @@ class MenuScene: SKScene {
         let yPosition = gameTitleLabelNode.position.y
         gameTitleLabelNode.position = CGPoint(x: frame.size.width/2, y: yPosition)
     }
+    private func setupAppleWeatherLabel() {
+        appleWeatherLabelNode = self.childNode(withName: "appleWeatherLabel") as? SKSpriteNode
+        let yPosition = appleWeatherLabelNode.position.y
+        appleWeatherLabelNode.position = CGPoint(x: frame.size.width/2, y: yPosition)
+    }
     
     private func setupNewGameButtonNode() {
         newGameButtonNode = self.childNode(withName: newGameButtonName) as? SKSpriteNode
@@ -96,9 +105,52 @@ class MenuScene: SKScene {
         newGameButtonNode.position = CGPoint(x: frame.size.width/2, y: yPosition)
     }
     
+    func showLoadingScreen() {
+        
+        let loadingBackground = SKSpriteNode(color: .white, size: CGSize(width: frame.size.width, height: frame.size.height))
+        loadingBackground.alpha = 0.7
+        loadingBackground.position = CGPoint(x: frame.midX, y: frame.midY)
+        loadingBackground.zPosition = 2
+        addChild(loadingBackground)
+        
+        let spinner = SKSpriteNode(imageNamed: "spinner")
+        
+        spinner.position = CGPoint(x: frame.midX, y: frame.midY)
+        let spinnerImageSize = CGSize(width: 100, height: 100)
+        spinner.color = .white
+        spinner.size = spinnerImageSize
+        spinner.zPosition = 3
+        
+        addChild(spinner)
+        let rotateAction = SKAction.rotate(byAngle: .pi, duration: 1)
+        let repeatAction = SKAction.repeatForever(rotateAction)
+        spinner.run(repeatAction)
+        
+    }
+    
+    func hideLoadingScreen() {
+        for node in children {
+            node.removeFromParent()
+        }
+    }
+    
+    func setupMenuMusic() {
+        if let musicURL = Bundle.main.url(forResource: "menu_music", withExtension: "mp3") {
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.ambient)
+                try AVAudioSession.sharedInstance().setActive(true)
+                backgroundMusicPlayer = try AVAudioPlayer(contentsOf: musicURL)
+                backgroundMusicPlayer.numberOfLoops = 0 // Set to -1 for looping
+                backgroundMusicPlayer.play()
+            } catch {
+                print("Error loading music: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     func setupPhisicsWord() {
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
-//        physicsWorld.contactDelegate = self
+        //        physicsWorld.contactDelegate = self
         
         if (weatherKitManager.condition == "Heavy Rain" || weatherKitManager.condition == "Rain"){
             let background = SKSpriteNode(imageNamed: "Sunny")
@@ -120,7 +172,7 @@ class MenuScene: SKScene {
             background.alpha = 1
         }
         
-
+        
     }
     
     func setupStarField() {
@@ -151,28 +203,28 @@ class MenuScene: SKScene {
         
     }
     
-//    private func setupStartField() {
-//        starField = self.childNode(withName: "starField") as? SKEmitterNode
-//        starField.advanceSimulationTime(10)
-//    }
+    //    private func setupStartField() {
+    //        starField = self.childNode(withName: "starField") as? SKEmitterNode
+    //        starField.advanceSimulationTime(10)
+    //    }
     
-//    private func setupDifficultyButtonNode() {
-//        difficultyButtonNode = self.childNode(withName: difficultyButtonName) as? SKSpriteNode
-//        difficultyButtonNode.texture = SKTexture(imageNamed: difficultyButtonName)
-//        let yPosition = difficultyButtonNode.position.y
-//        difficultyButtonNode.position = CGPoint(x: frame.size.width/2, y: yPosition)
-//    }
+    //    private func setupDifficultyButtonNode() {
+    //        difficultyButtonNode = self.childNode(withName: difficultyButtonName) as? SKSpriteNode
+    //        difficultyButtonNode.texture = SKTexture(imageNamed: difficultyButtonName)
+    //        let yPosition = difficultyButtonNode.position.y
+    //        difficultyButtonNode.position = CGPoint(x: frame.size.width/2, y: yPosition)
+    //    }
     
-//    private func setupDifficultLabelNode() {
-//        difficultyLabelNode = self.childNode(withName: "difficultyLabel") as? SKLabelNode
-//        let yPosition = difficultyLabelNode.position.y
-//        difficultyLabelNode.position = CGPoint(x: frame.size.width/2, y: yPosition)
-//        if let gameDifficulty = userDefaults.value(forKey: Constants.UserDefaultKeys.GameDifficulty) as? String {
-//            difficultyLabelNode.text = gameDifficulty
-//        } else {
-//            difficultyLabelNode.text = DifficultyOptions.Easy.description
-//        }
-//    }
+    //    private func setupDifficultLabelNode() {
+    //        difficultyLabelNode = self.childNode(withName: "difficultyLabel") as? SKLabelNode
+    //        let yPosition = difficultyLabelNode.position.y
+    //        difficultyLabelNode.position = CGPoint(x: frame.size.width/2, y: yPosition)
+    //        if let gameDifficulty = userDefaults.value(forKey: Constants.UserDefaultKeys.GameDifficulty) as? String {
+    //            difficultyLabelNode.text = gameDifficulty
+    //        } else {
+    //            difficultyLabelNode.text = DifficultyOptions.Easy.description
+    //        }
+    //    }
     
     private func setupLeaderboardButtonNode() {
         leaderboardButtonNode = self.childNode(withName: leaderboardButtonName) as? SKSpriteNode
@@ -181,20 +233,20 @@ class MenuScene: SKScene {
         leaderboardButtonNode.position = CGPoint(x: frame.size.width/2, y: yPosition)
     }
     
-//    func changeDifficulty() {
-//        guard let difficulty = DifficultyOptions(rawValue: difficultyLabelNode.text!) else { return }
-//        switch difficulty {
-//        case .Easy:
-//            difficultyLabelNode.text = DifficultyOptions.Medium.description
-//            userDefaults.set(DifficultyOptions.Medium.description, forKey: Constants.UserDefaultKeys.GameDifficulty)
-//        case .Medium:
-//            difficultyLabelNode.text = DifficultyOptions.Hard.description
-//            userDefaults.set(DifficultyOptions.Hard.description, forKey: Constants.UserDefaultKeys.GameDifficulty)
-//        case .Hard:
-//            difficultyLabelNode.text = DifficultyOptions.Easy.description
-//            userDefaults.set(DifficultyOptions.Easy.description, forKey: Constants.UserDefaultKeys.GameDifficulty)
-//        }
-//    }
+    //    func changeDifficulty() {
+    //        guard let difficulty = DifficultyOptions(rawValue: difficultyLabelNode.text!) else { return }
+    //        switch difficulty {
+    //        case .Easy:
+    //            difficultyLabelNode.text = DifficultyOptions.Medium.description
+    //            userDefaults.set(DifficultyOptions.Medium.description, forKey: Constants.UserDefaultKeys.GameDifficulty)
+    //        case .Medium:
+    //            difficultyLabelNode.text = DifficultyOptions.Hard.description
+    //            userDefaults.set(DifficultyOptions.Hard.description, forKey: Constants.UserDefaultKeys.GameDifficulty)
+    //        case .Hard:
+    //            difficultyLabelNode.text = DifficultyOptions.Easy.description
+    //            userDefaults.set(DifficultyOptions.Easy.description, forKey: Constants.UserDefaultKeys.GameDifficulty)
+    //        }
+    //    }
     
     func showingLeaderboard(){
         GameCenterManager.shared.showLeaderboard()

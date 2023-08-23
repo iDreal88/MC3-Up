@@ -8,9 +8,7 @@
 import SpriteKit
 import GameplayKit
 import CoreMotion
-
-
-    
+import AVFoundation
 
 struct PhysicsCatagory {
     static let None: UInt32 = 0
@@ -23,7 +21,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     var weatherKitManager = WeatherKitManager()
     var locationManager = LocationManager()
-    
+    var backgroundMusicPlayer: AVAudioPlayer!
     var starField: SKEmitterNode!
     var rainField: SKEmitterNode!
     var balloon: SKSpriteNode!
@@ -72,7 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupScoreLabel()
         setupSpikes()
         setupCoreMotion()
-        
+        setupBackgroundMusic()
     }
     
     func updateScore() {
@@ -82,6 +80,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 score += 1 // Update the score when balloon passes through a spike
 //            }
         }
+    
+    func setupBackgroundMusic() {
+        if let musicURL = Bundle.main.url(forResource: "background_music", withExtension: "mp3") {
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.ambient)
+                try AVAudioSession.sharedInstance().setActive(true)
+                backgroundMusicPlayer = try AVAudioPlayer(contentsOf: musicURL)
+                backgroundMusicPlayer.numberOfLoops = -1 // Set to -1 for looping
+                backgroundMusicPlayer.play()
+            } catch {
+                print("Error loading music: \(error.localizedDescription)")
+            }
+        }
+    }
     
     func setupLives() {
         livesArray = [SKSpriteNode]()
@@ -127,6 +139,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             background.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
             addChild(background)
             background.zPosition = -2
+            background.alpha = 0.5
             background.alpha = 1
         }
         
@@ -167,7 +180,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         balloon.position = CGPoint(x: frame.size.width / 2, y: balloon.size.height + 50 )
         addChild(balloon)
         balloon.name = "balloon"
-        balloon.physicsBody = SKPhysicsBody(circleOfRadius: balloon.size.width/2.5)
+        balloon.physicsBody = SKPhysicsBody(circleOfRadius: balloon.size.width/3)
         balloon.physicsBody?.categoryBitMask = PhysicsCatagory.Balloon
         balloon.physicsBody?.contactTestBitMask = PhysicsCatagory.Space
         balloon.physicsBody?.collisionBitMask = PhysicsCatagory.Spike
@@ -284,9 +297,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         leftSpike.setScale(0.5)
         midSpace.setScale(0.5)
         rightSpike.setScale(0.5)
-        rightSpike.size = CGSize(width: 250, height: 60)
-        midSpace.size = CGSize(width: 100, height: 60)
-        leftSpike.size = CGSize(width: 250, height: 60)
+        rightSpike.size = CGSize(width: 250, height: 50)
+        midSpace.size = CGSize(width: 100, height: 50)
+        leftSpike.size = CGSize(width: 250, height: 50)
         
         leftSpike.physicsBody = SKPhysicsBody(rectangleOf: leftSpike.size)
         leftSpike.physicsBody?.categoryBitMask = PhysicsCatagory.Spike
@@ -374,6 +387,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if livesArray.count == 0 {
             let transition = SKTransition.flipHorizontal(withDuration: 0.5)
             let gameScene = SKScene(fileNamed: "GameOver") as! GameOver
+            gameScene.size = self.frame.size
+            gameScene.scene?.scaleMode = .fill
+            backgroundMusicPlayer.stop()
+//            gameScene.size = GameScene(size: self.size).self.size
+//            gameScene.scene?.scaleMode = .resizeFill
+//            gameScene.size = self.frame.size
+//            let gameScene = GameScene(size: self.size)
             gameScene.score = self.score
             self.view?.presentScene(gameScene, transition: transition)
         }
@@ -429,6 +449,4 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             balloon.position.x = frame.size.width - 20
         }
     }
-
-    
 }

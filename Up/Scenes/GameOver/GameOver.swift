@@ -6,6 +6,7 @@
 //
 
 import SpriteKit
+import AVFoundation
 
 class GameOver: SKScene {
     
@@ -15,6 +16,7 @@ class GameOver: SKScene {
     var scoreNumberLabel: SKLabelNode!
     var newGameButtonNode: SKSpriteNode!
     var menuButtonNode: SKSpriteNode!
+    var backgroundMusicPlayer: AVAudioPlayer!
     
     var score: Int = 0
     
@@ -25,6 +27,21 @@ class GameOver: SKScene {
         setupNewGameButton()
         setupMenuButtonNode()
         saveLeaderboard()
+        setupGameOverMusic()
+    }
+    
+    func setupGameOverMusic() {
+        if let musicURL = Bundle.main.url(forResource: "gameOver", withExtension: "mp3") {
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.ambient)
+                try AVAudioSession.sharedInstance().setActive(true)
+                backgroundMusicPlayer = try AVAudioPlayer(contentsOf: musicURL)
+                backgroundMusicPlayer.numberOfLoops = 0 // Set to -1 for looping
+                backgroundMusicPlayer.play()
+            } catch {
+                print("Error loading music: \(error.localizedDescription)")
+            }
+        }
     }
     
     func setupPhisicsWord() {
@@ -102,6 +119,12 @@ class GameOver: SKScene {
     func setupScoreNumberLabel() {
         scoreNumberLabel = self.childNode(withName: "scoreNumberLabel") as? SKLabelNode
         scoreNumberLabel.text = "\(score)"
+        
+        // Replace "SFProRounded-SemiBold" with the actual font name of SF Pro Rounded Semi-Bold
+        if let sfProRoundedSemiBoldFont = UIFont(name: "SFProRounded-SemiBold", size: 20) {
+            scoreNumberLabel.fontName = sfProRoundedSemiBoldFont.fontName
+            scoreNumberLabel.fontSize = sfProRoundedSemiBoldFont.pointSize
+        }
     }
     
     func setupNewGameButton() {
@@ -114,12 +137,16 @@ class GameOver: SKScene {
         guard let location = touch?.location(in: self) else { return }
         let node = nodes(at: location)
         if node[0].name == "newGameButton" {
+            backgroundMusicPlayer.stop()
             let transition = SKTransition.flipHorizontal(withDuration: 0.5)
             let gameScene = GameScene(size: self.size)
             self.view?.presentScene(gameScene, transition: transition)
         } else  if node[0].name == "menuButton" {
+            backgroundMusicPlayer.stop()
             let transition = SKTransition.flipHorizontal(withDuration: 0.5)
             let gameOverScene = SKScene(fileNamed: "MenuScene")!
+            gameOverScene.size = self.frame.size
+            gameOverScene.scene?.scaleMode = .fill
             self.view?.presentScene(gameOverScene, transition: transition)
         }
     }

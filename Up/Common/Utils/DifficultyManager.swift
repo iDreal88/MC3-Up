@@ -42,7 +42,7 @@ class DifficultyManager {
     func getRandomNumber() -> CGFloat {
         switch difficulty {
         case .Easy:
-            return CGFloat.random(min: -35, max: 35)
+            return CGFloat.random(min: -65, max: 65)
         case .Medium:
             return CGFloat.random(min: -65, max: 65)
         case .Hard:
